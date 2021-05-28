@@ -43,7 +43,9 @@ public class Password {
         for (int i = 0; i <= maxNum; i++) {
             byte[] bytes = stringToBytes(String.valueOf(i));
             String str = bytesToHexString(Objects.requireNonNull(bytes));
-            if (str.equals(encoded)) return String.valueOf(i);
+            if (str.equals(encoded)) {
+                return "found: " + i;
+            }
         }
         return "failed";
     }
@@ -56,7 +58,7 @@ public class Password {
             byte[] bytes = stringToBytes(password);
             String str = bytesToHexString(Objects.requireNonNull(bytes));
             System.out.println(str);
-        } else if (args.length == 2){
+        } else if (args.length == 2) {
             String decoded = decrypt(args[0], args[1]);
             System.out.println(decoded);
         }
