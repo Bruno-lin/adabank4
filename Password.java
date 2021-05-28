@@ -1,7 +1,5 @@
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 public class Password {
@@ -40,34 +38,28 @@ public class Password {
         int digit = Integer.parseInt(digits);
         char[] alphabet = "0123456789abcdefghijklmnopqrstuvwxyz".toCharArray();
 
-        List<String> combinations = new ArrayList<>();
-
-        combine(combinations, alphabet, new StringBuilder(), digit, 0);
-
-        for (String letters : combinations) {
-            byte[] bytes = stringToBytes(letters);
-            String str = bytesToHexString(Objects.requireNonNull(bytes));
-            if (str.equals(encoded)) {
-                return "found: " + letters;
-            }
-        }
-
-        return "failed";
+        return combine(alphabet, new StringBuilder(), digit, 0, encoded);
     }
 
     /**
-     * 遍历所有组合
+     * 暴力破解过程
      */
-    public static void combine(List<String> combinations, char[] alphabet, StringBuilder sb,
-                               int digit, int index) {
+    public static String combine(char[] alphabet, StringBuilder sb,
+                                 int digit, int index, String encoded) {
         if (index < digit) {
             for (char c : alphabet) {
                 sb.append(c);
-                combine(combinations, alphabet, sb, digit, index + 1);
+                combine(alphabet, sb, digit, index + 1, encoded);
                 sb.deleteCharAt(sb.length() - 1);
             }
-        } else
-            combinations.add(sb.toString());
+        } else {
+            byte[] bytes = stringToBytes(sb.toString());
+            String str = bytesToHexString(Objects.requireNonNull(bytes));
+            if (str.equals(encoded)) {
+                return "found: " + sb;
+            }
+        }
+        return "failed";
     }
 
     public static void main(String[] args) {
