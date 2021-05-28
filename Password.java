@@ -1,5 +1,7 @@
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class Password {
@@ -36,20 +38,37 @@ public class Password {
      */
     public static String decrypt(String digits, String encoded) {
         int digit = Integer.parseInt(digits);
+        char[] alphabet = "0123456789abcdefghijklmnopqrstuvwxyz".toCharArray();
 
-        String Num = "9".repeat(digit);
-        int maxNum = Integer.parseInt(Num);
+        List<String> combinations = new ArrayList<>();
 
-        for (int i = 0; i <= maxNum; i++) {
-            byte[] bytes = stringToBytes(String.valueOf(i));
+        combine(combinations, alphabet, new StringBuilder(), digit, 0);
+
+        for (String letters : combinations) {
+            byte[] bytes = stringToBytes(letters);
             String str = bytesToHexString(Objects.requireNonNull(bytes));
             if (str.equals(encoded)) {
-                return "found: " + i;
+                return "found: " + letters;
             }
         }
+
         return "failed";
     }
 
+    /**
+     * 遍历所有组合
+     */
+    public static void combine(List<String> combinations, char[] alphabet, StringBuilder sb,
+                               int digit, int index) {
+        if (index < digit) {
+            for (char c : alphabet) {
+                sb.append(c);
+                combine(combinations, alphabet, sb, digit, index + 1);
+                sb.deleteCharAt(sb.length() - 1);
+            }
+        } else
+            combinations.add(sb.toString());
+    }
 
     public static void main(String[] args) {
 
