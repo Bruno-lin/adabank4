@@ -1,6 +1,7 @@
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Objects;
+import java.util.concurrent.CountDownLatch;
 
 public class Password {
 
@@ -38,31 +39,36 @@ public class Password {
         int digit = Integer.parseInt(digits);
         char[] alphabet = "0123456789abcdefghijklmnopqrstuvwxyz".toCharArray();
 
-        return combine(alphabet, new StringBuilder(), digit, 0, encoded);
+        return findPassword(alphabet, new StringBuilder(), digit, 0, encoded);
     }
 
     /**
      * 暴力破解过程
      */
-    public static String combine(char[] alphabet, StringBuilder sb,
-                                 int digit, int index, String encoded) {
+    public static String findPassword(char[] alphabet, StringBuilder sb,
+                                      int digit, int index, String encoded) {
         if (index < digit) {
             for (char c : alphabet) {
                 sb.append(c);
-                combine(alphabet, sb, digit, index + 1, encoded);
+
+                if (isMatch(sb, encoded)) return "found: " + sb;
+
+                findPassword(alphabet, sb, digit, index + 1, encoded);
+
                 sb.deleteCharAt(sb.length() - 1);
-            }
-        } else {
-            byte[] bytes = stringToBytes(sb.toString());
-            String str = bytesToHexString(Objects.requireNonNull(bytes));
-            if (str.equals(encoded)) {
-                return "found: " + sb;
             }
         }
         return "failed";
     }
 
-    public static void main(String[] args) {
+    //判断是否匹配
+    private static boolean isMatch(StringBuilder sb, String encoded) {
+        byte[] bytes = stringToBytes(sb.toString());
+        String str = bytesToHexString(Objects.requireNonNull(bytes));
+        return str.equals(encoded);
+    }
+
+    public static void main(String[] args) throws InterruptedException {
 
         if (args.length == 1) {
             String password = args[0];
@@ -72,6 +78,16 @@ public class Password {
         } else if (args.length == 2) {
             String decoded = decrypt(args[0], args[1]);
             System.out.println(decoded);
+        } else if (args.length == 3) {
+            int threadNums = Integer.parseInt(args[2]);
+            CountDownLatch latch = new CountDownLatch(threadNums);
+            for (int i = 0; i < threadNums; i++) {
+                new Thread(() -> {
+                    System.out.println(decrypt(args[0], args[1]));
+                    latch.countDown();
+                }).start();
+            }
+            latch.await();
         }
     }
 }
