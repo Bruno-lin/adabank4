@@ -8,8 +8,8 @@ public class Transfer {
     static int count = 0;
 
     public static void main(String[] args) throws Exception {
-        File file = new File("transactions2.txt");
-        int threadNums = Integer.parseInt("4");
+        File file = new File(args[0]);
+        int threadNums = Integer.parseInt(args[1]);
 
         FileReader fr = new FileReader(file);
         BufferedReader br = new BufferedReader(fr);
