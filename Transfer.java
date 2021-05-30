@@ -5,6 +5,7 @@ import java.util.concurrent.CountDownLatch;
 
 public class Transfer {
     private static final Map<String, User> trans = new HashMap<>();
+    static int count = 0;
 
     public static void main(String[] args) throws Exception {
         File file = new File(args[0]);
@@ -13,6 +14,7 @@ public class Transfer {
         FileReader fr = new FileReader(file);
         BufferedReader br = new BufferedReader(fr);
         CountDownLatch latch = new CountDownLatch(threadNums);
+
 
         for (int i = 0; i < threadNums; i++) {
             new Thread(() -> {
@@ -29,7 +31,9 @@ public class Transfer {
                         return;
                     }
 
-                    String[] info = transaction.trim().split("\\s");
+                    count++;
+
+                    String[] info = transaction.trim().split("\\s+");
                     String remitterName = info[0];
                     String remitteeName = info[1];
                     int amount = Integer.parseInt(info[2]);
@@ -42,6 +46,8 @@ public class Transfer {
 
         for (User user : trans.values())
             System.out.println(user.toString());
+
+        System.out.println(count);
     }
 
     /**
