@@ -8,13 +8,13 @@ public class Transfer {
     static int count = 0;
 
     public static void main(String[] args) throws Exception {
-        File file = new File(args[0]);
-        int threadNums = Integer.parseInt(args[1]);
+        File file = new File("transactions2.txt");
+        int threadNums = Integer.parseInt("4");
 
         FileReader fr = new FileReader(file);
         BufferedReader br = new BufferedReader(fr);
-        CountDownLatch latch = new CountDownLatch(threadNums);
 
+        CountDownLatch latch = new CountDownLatch(threadNums);
 
         for (int i = 0; i < threadNums; i++) {
             new Thread(() -> {
@@ -42,6 +42,7 @@ public class Transfer {
                 }
             }).start();
         }
+
         latch.await();
 
         for (User user : trans.values())
@@ -60,14 +61,18 @@ public class Transfer {
         if (trans.get(remitteeName) == null) {
             trans.put(remitteeName, new User(remitteeName));
         }
-        User remitter = trans.get(remitterName);
-        User remittee = trans.get(remitteeName);
 
-        remitter.setBalance(-1 * amount);
-        remittee.setBalance(amount);
+        synchronized (trans.get(remitterName)) {
+            User remitter = trans.get(remitterName);
+            remitter.setBalance(-1 * amount);
+            remitter.setTransactions();
+        }
 
-        remitter.setTransactions();
-        remittee.setTransactions();
+        synchronized (trans.get(remitteeName)) {
+            User remittee = trans.get(remitteeName);
+            remittee.setBalance(amount);
+            remittee.setTransactions();
+        }
     }
 
 }
