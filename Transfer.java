@@ -7,8 +7,8 @@ public class Transfer {
     private static final Map<String, User> trans = new HashMap<>();
 
     public static void main(String[] args) throws Exception {
-        File file = new File(args[0]);
-        int threadNums = Integer.parseInt(args[1]);
+        File file = new File("transactions2.txt");
+        int threadNums = Integer.parseInt("4");
 
         FileReader fr = new FileReader(file);
         BufferedReader br = new BufferedReader(fr);
@@ -29,7 +29,7 @@ public class Transfer {
                         return;
                     }
 
-                    String[] info = transaction.trim().split("\\s+");
+                    String[] info = transaction.trim().split("\\s");
                     String remitterName = info[0];
                     String remitteeName = info[1];
                     int amount = Integer.parseInt(info[2]);
