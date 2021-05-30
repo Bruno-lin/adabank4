@@ -7,8 +7,8 @@ public class Transfer {
     private static final Map<String, User> trans = new HashMap<>();
 
     public static void main(String[] args) throws Exception {
-        File file = new File("transactions2.txt");
-        int threadNums = Integer.parseInt("4");
+        File file = new File(args[0]);
+        int threadNums = Integer.parseInt(args[1]);
 
         FileReader fr = new FileReader(file);
         BufferedReader br = new BufferedReader(fr);
@@ -49,19 +49,19 @@ public class Transfer {
      */
     private static void transfer(String remitterName, String remitteeName, int amount) {
         if (trans.get(remitterName) == null) {
-            trans.put(remitterName, new User(remitterName, 1000, 0));
+            trans.put(remitterName, new User(remitterName));
         }
         if (trans.get(remitteeName) == null) {
-            trans.put(remitteeName, new User(remitteeName, 1000, 0));
+            trans.put(remitteeName, new User(remitteeName));
         }
         User remitter = trans.get(remitterName);
         User remittee = trans.get(remitteeName);
 
-        remitter.setBalance(remitter.getBalance() - amount);
-        remittee.setBalance(remittee.getBalance() + amount);
+        remitter.setBalance(-1 * amount);
+        remittee.setBalance(amount);
 
-        remitter.setTransactions(remitter.getTransactions() + 1);
-        remittee.setTransactions(remittee.getTransactions() + 1);
+        remitter.setTransactions();
+        remittee.setTransactions();
     }
 
 }
